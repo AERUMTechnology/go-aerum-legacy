@@ -1,2 +1,2 @@
 #!/bin/bash
-make --directory $PWD/../.. geth
+make --directory $PWD/../.. aerum

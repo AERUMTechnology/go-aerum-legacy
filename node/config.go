@@ -277,6 +277,9 @@ func (c *Config) ResolvePath(path string) string {
 		if c.Name == "geth" {
 			oldpath = filepath.Join(c.DataDir, path)
 		}
+		if c.Name == "aerum" {
+			oldpath = filepath.Join(c.DataDir, path)
+		}
 		if oldpath != "" && common.FileExist(oldpath) {
 			// TODO: print warning
 			return oldpath

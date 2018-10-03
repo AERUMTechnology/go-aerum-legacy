@@ -22,7 +22,7 @@ Section "Uninstall"
   SimpleFC::AdvRemoveRule "Geth UDP discovery (UDP:30303)"
 
   # Remove IPC endpoint (https://github.com/AERUMTechnology/EIPs/issues/147)
-  ${un.EnvVarUpdate} $0 "AERUMTechnology_SOCKET" "R" "HKLM" "\\.\pipe\geth.ipc"
+  ${un.EnvVarUpdate} $0 "AERUMTechnology_SOCKET" "R" "HKLM" "\\.\pipe\aerum.ipc"
 
   # Remove install directory from PATH
   Push "$INSTDIR"

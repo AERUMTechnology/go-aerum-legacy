@@ -427,8 +427,8 @@ const tmplSourceJava = `
 
 package {{.Package}};
 
-import org.AERUMTechnology.geth.*;
-import org.AERUMTechnology.geth.internal.*;
+import org.AERUMTechnology.aerum.*;
+import org.AERUMTechnology.aerum.internal.*;
 
 {{range $contract := .Contracts}}
 	public class {{.Type}} {

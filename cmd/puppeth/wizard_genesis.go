@@ -22,13 +22,24 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/big"
-	"math/rand"
+	// "math/rand"
 	"time"
 
 	"github.com/AERUMTechnology/go-aerum/common"
+	"github.com/AERUMTechnology/go-aerum/contracts/atmosGovernance"
 	"github.com/AERUMTechnology/go-aerum/core"
 	"github.com/AERUMTechnology/go-aerum/log"
 	"github.com/AERUMTechnology/go-aerum/params"
+)
+
+// Values for AERUMS Genesis related to ATMOS Consensus
+var (
+	atmosNetID               = 418313827693
+	atmosGovernanceAddress   = "0xbf4ed7b27f1d666546e30d74d50d173d20bca754"
+	atmosBlockInterval       = uint64(2)
+	atmosEpochInterval       = uint64(1000)
+	atmosGasLimit            = uint64(25000000)
+	atmosEthereumRPCProvider = "https://rinkeby.infura.io"
 )
 
 // makeGenesis creates a new genesis struct based on some user input.
@@ -36,8 +47,8 @@ func (w *wizard) makeGenesis() {
 	// Construct a default genesis block
 	genesis := &core.Genesis{
 		Timestamp:  uint64(time.Now().Unix()),
-		GasLimit:   4700000,
-		Difficulty: big.NewInt(524288),
+		GasLimit:   atmosGasLimit,
+		Difficulty: big.NewInt(1),
 		Alloc:      make(core.GenesisAlloc),
 		Config: &params.ChainConfig{
 			HomesteadBlock: big.NewInt(1),
@@ -45,35 +56,27 @@ func (w *wizard) makeGenesis() {
 			EIP155Block:    big.NewInt(3),
 			EIP158Block:    big.NewInt(3),
 			ByzantiumBlock: big.NewInt(4),
+			Atmos: &params.AtmosConfig{
+				Period:                     atmosBlockInterval,
+				Epoch:                      atmosEpochInterval,
+				GovernanceAddress:          common.HexToAddress(atmosGovernanceAddress),
+				AERUMTechnologyApiEndpoint: atmosEthereumRPCProvider,
+			},
 		},
 	}
+
 	// Figure out which consensus engine to choose
 	fmt.Println()
-	fmt.Println("Which consensus engine to use? (default = clique)")
-	fmt.Println(" 1. Ethash - proof-of-work")
-	fmt.Println(" 2. Clique - proof-of-authority")
+	fmt.Println("Which consensus engine to use? As if you have a choice :D ")
+	fmt.Println(" 1. ATMOS - DxPoS delegated cross-chain proof-of-stake")
 
 	choice := w.read()
 	switch {
-	case choice == "1":
-		// In case of ethash, we're pretty much done
-		genesis.Config.Ethash = new(params.EthashConfig)
-		genesis.ExtraData = make([]byte, 32)
+	case len(choice) < 1 || choice == "1":
 
-	case choice == "" || choice == "2":
-		// In the case of clique, configure the consensus parameters
-		genesis.Difficulty = big.NewInt(1)
-		genesis.Config.Clique = &params.CliqueConfig{
-			Period: 15,
-			Epoch:  30000,
-		}
-		fmt.Println()
-		fmt.Println("How many seconds should blocks take? (default = 15)")
-		genesis.Config.Clique.Period = uint64(w.readDefaultInt(15))
+		genesis.Config.ChainID = new(big.Int).SetUint64(uint64(atmosNetID))
 
-		// We also need the initial list of signers
-		fmt.Println()
-		fmt.Println("Which accounts are allowed to seal? (mandatory at least one)")
+		fmt.Println("Add the account addresses of the AERUM \"bootstrap\" delegates ? (mandatory at least one)")
 
 		var signers []common.Address
 		for {
@@ -101,27 +104,36 @@ func (w *wizard) makeGenesis() {
 	default:
 		log.Crit("Invalid consensus engine choice", "choice", choice)
 	}
-	// Consensus all set, just ask for initial funds and go
-	fmt.Println()
-	fmt.Println("Which accounts should be pre-funded? (advisable at least one)")
-	for {
-		// Read the address of the account to fund
-		if address := w.readAddress(); address != nil {
-			genesis.Alloc[*address] = core.GenesisAccount{
-				Balance: new(big.Int).Lsh(big.NewInt(1), 256-7), // 2^256 / 128 (allow many pre-funds without balance overflows)
-			}
-			continue
-		}
-		break
+
+	fmt.Println("\n\n[aerDEV] ----------------------------------------------------------- [aerDEV]")
+	fmt.Println("[aerDEV] --- Just preallocated Aerum Coin to hard coded accounts --- [aerDEV]")
+	fmt.Println("[aerDEV] ----------------------------------------------------------- [aerDEV]\n\n")
+
+	aerumTeamAddress := map[string]string{
+		"52c47938be22aab6f22b6608d9fe7f1e42aa8c61": "50000000000000000000000000",
+		"56220873fb32f35a27f5e0f6604fda2aef439a5f": "10000000000000000000000000",
+		"5ff4b0211b11d83b59d168bf1110a223a6e669fd": "10000000000000000000000000",
+		"827720d8c7d3bab2566eee1ecc2207139dfb25af": "10000000000000000000000000",
+		"8a3eefdbf626ae336272a379bddeb8dcad91d07b": "10000000000000000000000000",
+		"b65b8c2376293fea13f6ed7d2a8467f0949c312d": "10000000000000000000000000",
 	}
+
+	for aerumTeamAddress, aerumTeamBalance := range aerumTeamAddress {
+		bigaddr, _ := new(big.Int).SetString(aerumTeamAddress, 16)
+		address := common.BigToAddress(bigaddr)
+
+		bignum := new(big.Int)
+		bignum.SetString(aerumTeamBalance, 10)
+
+		genesis.Alloc[address] = core.GenesisAccount{
+			Balance: bignum,
+		}
+	}
+
 	// Add a batch of precompile balances to avoid them getting deleted
 	for i := int64(0); i < 256; i++ {
 		genesis.Alloc[common.BigToAddress(big.NewInt(i))] = core.GenesisAccount{Balance: big.NewInt(1)}
 	}
-	// Query the user for some custom extras
-	fmt.Println()
-	fmt.Println("Specify your chain/network ID if you want an explicit one (default = random)")
-	genesis.Config.ChainID = new(big.Int).SetUint64(uint64(w.readDefaultInt(rand.Intn(65536))))
 
 	// All done, store the genesis and flush to disk
 	log.Info("Configured new genesis block")
@@ -135,38 +147,38 @@ func (w *wizard) makeGenesis() {
 func (w *wizard) manageGenesis() {
 	// Figure out whether to modify or export the genesis
 	fmt.Println()
-	fmt.Println(" 1. Modify existing fork rules")
-	fmt.Println(" 2. Export genesis configuration")
-	fmt.Println(" 3. Remove genesis configuration")
+	// fmt.Println(" 1. Modify existing fork rules")
+	fmt.Println(" 1. Export genesis configuration")
+	fmt.Println(" 2. Remove genesis configuration")
 
 	choice := w.read()
 	switch {
+	// case choice == "1":
+	// 	// Fork rule updating requested, iterate over each fork
+	// 	fmt.Println()
+	// 	fmt.Printf("Which block should Homestead come into effect? (default = %v)\n", w.conf.Genesis.Config.HomesteadBlock)
+	// 	w.conf.Genesis.Config.HomesteadBlock = w.readDefaultBigInt(w.conf.Genesis.Config.HomesteadBlock)
+
+	// 	fmt.Println()
+	// 	fmt.Printf("Which block should EIP150 come into effect? (default = %v)\n", w.conf.Genesis.Config.EIP150Block)
+	// 	w.conf.Genesis.Config.EIP150Block = w.readDefaultBigInt(w.conf.Genesis.Config.EIP150Block)
+
+	// 	fmt.Println()
+	// 	fmt.Printf("Which block should EIP155 come into effect? (default = %v)\n", w.conf.Genesis.Config.EIP155Block)
+	// 	w.conf.Genesis.Config.EIP155Block = w.readDefaultBigInt(w.conf.Genesis.Config.EIP155Block)
+
+	// 	fmt.Println()
+	// 	fmt.Printf("Which block should EIP158 come into effect? (default = %v)\n", w.conf.Genesis.Config.EIP158Block)
+	// 	w.conf.Genesis.Config.EIP158Block = w.readDefaultBigInt(w.conf.Genesis.Config.EIP158Block)
+
+	// 	fmt.Println()
+	// 	fmt.Printf("Which block should Byzantium come into effect? (default = %v)\n", w.conf.Genesis.Config.ByzantiumBlock)
+	// 	w.conf.Genesis.Config.ByzantiumBlock = w.readDefaultBigInt(w.conf.Genesis.Config.ByzantiumBlock)
+
+	// 	out, _ := json.MarshalIndent(w.conf.Genesis.Config, "", "  ")
+	// 	fmt.Printf("Chain configuration updated:\n\n%s\n", out)
+
 	case choice == "1":
-		// Fork rule updating requested, iterate over each fork
-		fmt.Println()
-		fmt.Printf("Which block should Homestead come into effect? (default = %v)\n", w.conf.Genesis.Config.HomesteadBlock)
-		w.conf.Genesis.Config.HomesteadBlock = w.readDefaultBigInt(w.conf.Genesis.Config.HomesteadBlock)
-
-		fmt.Println()
-		fmt.Printf("Which block should EIP150 come into effect? (default = %v)\n", w.conf.Genesis.Config.EIP150Block)
-		w.conf.Genesis.Config.EIP150Block = w.readDefaultBigInt(w.conf.Genesis.Config.EIP150Block)
-
-		fmt.Println()
-		fmt.Printf("Which block should EIP155 come into effect? (default = %v)\n", w.conf.Genesis.Config.EIP155Block)
-		w.conf.Genesis.Config.EIP155Block = w.readDefaultBigInt(w.conf.Genesis.Config.EIP155Block)
-
-		fmt.Println()
-		fmt.Printf("Which block should EIP158 come into effect? (default = %v)\n", w.conf.Genesis.Config.EIP158Block)
-		w.conf.Genesis.Config.EIP158Block = w.readDefaultBigInt(w.conf.Genesis.Config.EIP158Block)
-
-		fmt.Println()
-		fmt.Printf("Which block should Byzantium come into effect? (default = %v)\n", w.conf.Genesis.Config.ByzantiumBlock)
-		w.conf.Genesis.Config.ByzantiumBlock = w.readDefaultBigInt(w.conf.Genesis.Config.ByzantiumBlock)
-
-		out, _ := json.MarshalIndent(w.conf.Genesis.Config, "", "  ")
-		fmt.Printf("Chain configuration updated:\n\n%s\n", out)
-
-	case choice == "2":
 		// Save whatever genesis configuration we currently have
 		fmt.Println()
 		fmt.Printf("Which file to save the genesis into? (default = %s.json)\n", w.network)
@@ -176,7 +188,7 @@ func (w *wizard) manageGenesis() {
 		}
 		log.Info("Exported existing genesis block")
 
-	case choice == "3":
+	case choice == "2":
 		// Make sure we don't have any services running
 		if len(w.conf.servers()) > 0 {
 			log.Error("Genesis reset requires all services and servers torn down")

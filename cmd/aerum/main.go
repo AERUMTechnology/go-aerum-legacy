@@ -28,7 +28,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/elastic/gosigar"
 	"github.com/AERUMTechnology/go-aerum/accounts"
 	"github.com/AERUMTechnology/go-aerum/accounts/keystore"
 	"github.com/AERUMTechnology/go-aerum/cmd/utils"
@@ -39,11 +38,12 @@ import (
 	"github.com/AERUMTechnology/go-aerum/log"
 	"github.com/AERUMTechnology/go-aerum/metrics"
 	"github.com/AERUMTechnology/go-aerum/node"
+	"github.com/elastic/gosigar"
 	"gopkg.in/urfave/cli.v1"
 )
 
 const (
-	clientIdentifier = "geth" // Client identifier to advertise over the network
+	clientIdentifier = "aerum" // Client identifier to advertise over the network
 )
 
 var (
@@ -155,16 +155,16 @@ var (
 	}
 
 	// Added by Aerum
-    aerumFlags = []cli.Flag{
+	aerumFlags = []cli.Flag{
 		utils.AtmosAERUMTechnologyApiEndpointFlag,
-    }
+	}
 )
 
 func init() {
 	// Initialize the CLI app and start Geth
-	app.Action = geth
+	app.Action = aerum
 	app.HideVersion = true // we have a command to print the version
-	app.Copyright = "Copyright 2013-2018 The go-aerum Authors"
+	app.Copyright = "Copyright 2018 The go-aerum Authors"
 	app.Commands = []cli.Command{
 		// See chaincmd.go:
 		initCommand,
@@ -257,7 +257,7 @@ func main() {
 // geth is the main entry point into the system if no special subcommand is ran.
 // It creates a default node based on the command line arguments and runs it in
 // blocking mode, waiting for it to be shut down.
-func geth(ctx *cli.Context) error {
+func aerum(ctx *cli.Context) error {
 	node := makeFullNode(ctx)
 	startNode(ctx, node)
 	node.Wait()
@@ -269,7 +269,7 @@ func geth(ctx *cli.Context) error {
 // miner.
 func startNode(ctx *cli.Context, stack *node.Node) {
 	// Added by Aerum
-	log.Info("Starting geth Aerum version")
+	log.Info("Starting Aerum version")
 
 	debug.Memsize.Add("node", stack)
 
