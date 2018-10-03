@@ -27,25 +27,25 @@ import (
 
 	"github.com/AERUMTechnology/go-aerum/accounts"
 	"github.com/AERUMTechnology/go-aerum/common"
-/// 	"github.com/AERUMTechnology/go-aerum/common/hexutil"
+	"github.com/AERUMTechnology/go-aerum/accounts/abi/bind"
 	"github.com/AERUMTechnology/go-aerum/consensus"
 	"github.com/AERUMTechnology/go-aerum/consensus/misc"
+	guvnor "github.com/AERUMTechnology/go-aerum/contracts/atmosGovernance"
 	"github.com/AERUMTechnology/go-aerum/core/state"
 	"github.com/AERUMTechnology/go-aerum/core/types"
 	"github.com/AERUMTechnology/go-aerum/crypto"
 	"github.com/AERUMTechnology/go-aerum/crypto/sha3"
+	"github.com/AERUMTechnology/go-aerum/ethclient"
 	"github.com/AERUMTechnology/go-aerum/ethdb"
 	"github.com/AERUMTechnology/go-aerum/log"
 	"github.com/AERUMTechnology/go-aerum/params"
 	"github.com/AERUMTechnology/go-aerum/rlp"
 	"github.com/AERUMTechnology/go-aerum/rpc"
 	lru "github.com/hashicorp/golang-lru"
-	"github.com/AERUMTechnology/go-aerum/accounts/abi/bind"
-	"github.com/AERUMTechnology/go-aerum/ethclient"
 )
 
 const (
-/// 	checkpointInterval = 1024 // Number of blocks after which to save the vote snapshot to the database
+	/// 	checkpointInterval = 1024 // Number of blocks after which to save the vote snapshot to the database
 	inmemorySnapshots  = 128  // Number of recent vote snapshots to keep in memory
 	inmemorySignatures = 4096 // Number of recent block signatures to keep in memory
 
@@ -55,7 +55,7 @@ const (
 // Atmos proof-of-authority protocol constants.
 var (
 	// Added by Aerum
-	BlockReward    *big.Int = big.NewInt(0.487e+18) // Block reward in wei for successfully mining a block
+	BlockReward *big.Int = big.NewInt(0.487e+18) // Block reward in wei for successfully mining a block
 
 	epochLength = uint64(1000) // Default number of blocks after which to checkpoint and reset the pending votes
 	blockPeriod = uint64(2)    // Default minimum difference between two consecutive block's timestamps
@@ -63,8 +63,8 @@ var (
 	extraVanity = 32 // Fixed number of extra-data prefix bytes reserved for signer vanity
 	extraSeal   = 65 // Fixed number of extra-data suffix bytes reserved for signer seal
 
-/// 	nonceAuthVote = hexutil.MustDecode("0xffffffffffffffff") // Magic nonce number to vote on adding a new signer
-/// 	nonceDropVote = hexutil.MustDecode("0x0000000000000000") // Magic nonce number to vote on removing a signer.
+	/// 	nonceAuthVote = hexutil.MustDecode("0xffffffffffffffff") // Magic nonce number to vote on adding a new signer
+	/// 	nonceDropVote = hexutil.MustDecode("0x0000000000000000") // Magic nonce number to vote on removing a signer.
 
 	uncleHash = types.CalcUncleHash(nil) // Always Keccak256(RLP([])) as uncles are meaningless outside of PoW.
 
@@ -85,13 +85,13 @@ var (
 	// block has a beneficiary set to non-zeroes.
 	errInvalidCheckpointBeneficiary = errors.New("beneficiary in checkpoint block non-zero")
 
-/// 	// errInvalidVote is returned if a nonce value is something else that the two
-/// 	// allowed constants of 0x00..0 or 0xff..f.
-/// 	errInvalidVote = errors.New("vote nonce not 0x00..0 or 0xff..f")
+	/// 	// errInvalidVote is returned if a nonce value is something else that the two
+	/// 	// allowed constants of 0x00..0 or 0xff..f.
+	/// 	errInvalidVote = errors.New("vote nonce not 0x00..0 or 0xff..f")
 
-/// 	// errInvalidCheckpointVote is returned if a checkpoint/epoch transition block
-/// 	// has a vote nonce set to non-zeroes.
-/// 	errInvalidCheckpointVote = errors.New("vote nonce in checkpoint block non-zero")
+	/// 	// errInvalidCheckpointVote is returned if a checkpoint/epoch transition block
+	/// 	// has a vote nonce set to non-zeroes.
+	/// 	errInvalidCheckpointVote = errors.New("vote nonce in checkpoint block non-zero")
 
 	// errMissingVanity is returned if a block's extra-data section is shorter than
 	// 32 bytes, which is required to store the signer vanity.
@@ -205,12 +205,12 @@ func ecrecover(header *types.Header, sigcache *lru.ARCCache) (common.Address, er
 // AERUMTechnology testnet following the Ropsten attacks.
 type Atmos struct {
 	config *params.AtmosConfig // Consensus engine configuration parameters
-	db     ethdb.Database       // Database to store and retrieve snapshot checkpoints
+	db     ethdb.Database      // Database to store and retrieve snapshot checkpoints
 
 	recents    *lru.ARCCache // Snapshots for recent block to speed up reorgs
 	signatures *lru.ARCCache // Signatures of recent blocks to speed up mining
 
-/// 	proposals map[common.Address]bool // Current list of proposals we are pushing
+	/// 	proposals map[common.Address]bool // Current list of proposals we are pushing
 
 	signer common.Address // AERUMTechnology address of the signing key
 	signFn SignerFn       // Signer function to authorize hashes with
@@ -234,7 +234,7 @@ func New(config *params.AtmosConfig, db ethdb.Database) *Atmos {
 		db:         db,
 		recents:    recents,
 		signatures: signatures,
-/// 		proposals:  make(map[common.Address]bool),
+		/// 		proposals:  make(map[common.Address]bool),
 	}
 }
 
@@ -289,13 +289,13 @@ func (a *Atmos) verifyHeader(chain consensus.ChainReader, header *types.Header, 
 	if checkpoint && header.Coinbase != (common.Address{}) {
 		return errInvalidCheckpointBeneficiary
 	}
-/// 	// Nonces must be 0x00..0 or 0xff..f, zeroes enforced on checkpoints
-/// 	if !bytes.Equal(header.Nonce[:], nonceAuthVote) && !bytes.Equal(header.Nonce[:], nonceDropVote) {
-/// 		return errInvalidVote
-/// 	}
-/// 	if checkpoint && !bytes.Equal(header.Nonce[:], nonceDropVote) {
-/// 		return errInvalidCheckpointVote
-/// 	}
+	/// 	// Nonces must be 0x00..0 or 0xff..f, zeroes enforced on checkpoints
+	/// 	if !bytes.Equal(header.Nonce[:], nonceAuthVote) && !bytes.Equal(header.Nonce[:], nonceDropVote) {
+	/// 		return errInvalidVote
+	/// 	}
+	/// 	if checkpoint && !bytes.Equal(header.Nonce[:], nonceDropVote) {
+	/// 		return errInvalidCheckpointVote
+	/// 	}
 	// Check that the extra-data contains both the vanity and signature
 	if len(header.Extra) < extraVanity {
 		return errMissingVanity
@@ -389,14 +389,14 @@ func (a *Atmos) snapshot(chain consensus.ChainReader, number uint64, hash common
 			snap = s.(*Snapshot)
 			break
 		}
-///			// If an on-disk checkpoint snapshot can be found, use that
-///			if number%checkpointInterval == 0 {
-///				if s, err := loadSnapshot(a.config, a.signatures, a.db, hash); err == nil {
-///					log.Trace("Loaded voting snapshot from disk", "number", number, "hash", hash)
-///					snap = s
-///					break
-///				}
-///		}
+		///			// If an on-disk checkpoint snapshot can be found, use that
+		///			if number%checkpointInterval == 0 {
+		///				if s, err := loadSnapshot(a.config, a.signatures, a.db, hash); err == nil {
+		///					log.Trace("Loaded voting snapshot from disk", "number", number, "hash", hash)
+		///					snap = s
+		///					break
+		///				}
+		///		}
 		// If we're at block zero, make a snapshot
 		if number == 0 {
 			genesis := chain.GetHeaderByNumber(0)
@@ -468,7 +468,7 @@ func (a *Atmos) snapshot(chain consensus.ChainReader, number uint64, hash common
 	a.recents.Add(snap.Hash, snap)
 
 	// If we've generated a new checkpoint snapshot, save to disk
-/// 	if snap.Number%checkpointInterval == 0 && len(headers) > 0 {
+	/// 	if snap.Number%checkpointInterval == 0 && len(headers) > 0 {
 	// Added by Aerum
 	if snap.Number%a.config.Epoch == 0 && len(headers) > 0 {
 		if err = snap.store(a.db); err != nil {
@@ -550,27 +550,6 @@ func (a *Atmos) Prepare(chain consensus.ChainReader, header *types.Header) error
 	if err != nil {
 		return err
 	}
-///		if number%a.config.Epoch != 0 {
-///			a.lock.RLock()
-///
-///			// Gather all the proposals that make sense voting on
-///			addresses := make([]common.Address, 0, len(a.proposals))
-///			for address, authorize := range a.proposals {
-///				if snap.validVote(address, authorize) {
-///					addresses = append(addresses, address)
-///				}
-///			}
-///			// If there's pending proposals, cast a vote on them
-///			if len(addresses) > 0 {
-///				header.Coinbase = addresses[rand.Intn(len(addresses))]
-///				if a.proposals[header.Coinbase] {
-///					copy(header.Nonce[:], nonceAuthVote)
-///				} else {
-///					copy(header.Nonce[:], nonceDropVote)
-///				}
-///			}
-///			a.lock.RUnlock()
-///		}
 	// Set the correct difficulty
 	header.Difficulty = CalcDifficulty(snap, a.signer)
 
@@ -605,8 +584,8 @@ func (a *Atmos) Prepare(chain consensus.ChainReader, header *types.Header) error
 // Finalize implements consensus.Engine, ensuring no uncles are set, nor block
 // rewards given, and returns the final block.
 func (a *Atmos) Finalize(chain consensus.ChainReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header, receipts []*types.Receipt) (*types.Block, error) {
-/// 	// No block rewards in PoA, so the state remains as is and uncles are dropped
-    // Added by Aerum
+	/// 	// No block rewards in PoA, so the state remains as is and uncles are dropped
+	// Added by Aerum
 	// Accumulate any block rewards and commit the final state root
 	accumulateRewards(a, state, header)
 	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
@@ -731,7 +710,7 @@ func getComposers(config *params.AtmosConfig, number uint64, parents []*types.He
 
 	// TODO: Uncomment later, for now use test contract
 	// caller, err := NewGovernanceCaller(config.GovernanceAddress, ethclient)
-	caller, err := NewGovernanceTestCaller(config.GovernanceAddress, ethclient)
+	caller, err := guvnor.NewAtmosCaller(config.GovernanceAddress, ethclient)
 	if err != nil {
 		return nil, err
 	}
@@ -739,7 +718,7 @@ func getComposers(config *params.AtmosConfig, number uint64, parents []*types.He
 	// Get previous block time
 	prevBlockTimestamp := big.NewInt(0)
 	if len(parents) > 0 {
-		prevBlockTimestamp = parents[len(parents) - 1].Time
+		prevBlockTimestamp = parents[len(parents)-1].Time
 	}
 
 	addresses, err := caller.GetComposers(&bind.CallOpts{}, big.NewInt(int64(number)), prevBlockTimestamp)
@@ -749,7 +728,7 @@ func getComposers(config *params.AtmosConfig, number uint64, parents []*types.He
 
 	message := "New signers loaded: "
 	for _, address := range addresses {
-		message +=  " [" + address.Hex() + "] "
+		message += " [" + address.Hex() + "] "
 	}
 
 	log.Info(message)
