@@ -142,7 +142,7 @@ type ChainConfig struct {
 	Ethash *EthashConfig `json:"ethash,omitempty"`
 	Clique *CliqueConfig `json:"clique,omitempty"`
 	// Added by Aerum
-	Atmos  *AtmosConfig  `json:"atmos,omitempty"`
+	Atmos *AtmosConfig `json:"atmos,omitempty"`
 }
 
 // EthashConfig is the consensus engine configs for proof-of-work based sealing.
@@ -167,10 +167,10 @@ func (c *CliqueConfig) String() string {
 // Added by Aerum
 // AtmosConfig is the consensus engine configs for aerum proof-of-authority based sealing.
 type AtmosConfig struct {
-	Period              uint64         `json:"period"`            // Number of seconds between blocks to enforce
-	Epoch               uint64         `json:"epoch"`             // Epoch length to reset votes and checkpoint
-	GovernanceAddress   common.Address `json:"governanceAddress"` // Governance contract AERUMTechnology address
-	AERUMTechnologyApiEndpoint string         `json:AERUMTechnologyApiEndpoint` // AERUMTechnology node API endpoint (ipc, http, etc)
+	Period                     uint64         `json:"period"`              // Number of seconds between blocks to enforce
+	Epoch                      uint64         `json:"epoch"`               // Epoch length to reset votes and checkpoint
+	GovernanceAddress          common.Address `json:"governanceAddress"`   // Governance contract AERUMTechnology address
+	AERUMTechnologyApiEndpoint string         `json:"ethereumApiEndpoint"` // AERUMTechnology node API endpoint (ipc, http, etc)
 }
 
 // Added by Aerum
