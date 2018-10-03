@@ -22,28 +22,77 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/big"
-	// "math/rand"
 	"time"
 
 	"github.com/AERUMTechnology/go-aerum/common"
-	"github.com/AERUMTechnology/go-aerum/contracts/atmosGovernance"
+	"github.com/AERUMTechnology/go-aerum/accounts/abi/bind"
+	guvnor "github.com/AERUMTechnology/go-aerum/contracts/atmosGovernance"
 	"github.com/AERUMTechnology/go-aerum/core"
+	"github.com/AERUMTechnology/go-aerum/ethclient"
 	"github.com/AERUMTechnology/go-aerum/log"
 	"github.com/AERUMTechnology/go-aerum/params"
 )
 
 // Values for AERUMS Genesis related to ATMOS Consensus
 var (
+	atmosMinDelegateNo = 3
 	atmosNetID               = 418313827693
-	atmosGovernanceAddress   = "0xbf4ed7b27f1d666546e30d74d50d173d20bca754"
+	atmosGovernanceAddress   = "0x5df4f6cde8f209ef8f152b59cabce70db21787b3"
 	atmosBlockInterval       = uint64(2)
 	atmosEpochInterval       = uint64(1000)
 	atmosGasLimit            = uint64(25000000)
 	atmosEthereumRPCProvider = "https://rinkeby.infura.io"
 )
 
+func getBootstrapDelegates() ([]common.Address, error) {
+
+	fmt.Println("\n\n[aerDEV] --------------------------------------------------------------------------------------------------------- [aerDEV]")
+	fmt.Println("[aerDEV] --- We are calling our Governance Contract on Ethereum to add our bootstrap signers to this genesis --- [aerDEV]")
+	fmt.Println("[aerDEV] --------------------------------------------------------------------------------------------------------- [aerDEV]\n\n")
+
+	contractAddress := common.HexToAddress(atmosGovernanceAddress)
+
+	bootstrapDelegates := make([]common.Address, 0)
+
+	ethclient, err := ethclient.Dial(atmosEthereumRPCProvider)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	caller, err := guvnor.NewAtmosCaller(contractAddress, ethclient)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	addresses, err := caller.ShowBootstrapDelegates(&bind.CallOpts{})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if len(addresses) < atmosMinDelegateNo {
+		log.Error("Failed to save genesis file", "err", "Not enough Delegates to continue. Contact the aerum team to report this issue.")
+	}
+	
+	if len(addresses) >= atmosMinDelegateNo {
+		log.Info( fmt.Sprintf("Fantastic! we found %d delegates. you may proceed in generating a genesis.", len(addresses) )  )
+	}
+ 
+	for _, address := range addresses {
+		bootstrapDelegates = append(bootstrapDelegates, address)
+	}
+
+	return bootstrapDelegates, nil
+}
+
 // makeGenesis creates a new genesis struct based on some user input.
 func (w *wizard) makeGenesis() {
+
+	boostrapDelegate, err := getBootstrapDelegates()
+
+	if err != nil {
+		fmt.Println("ISSUE WITH GENERATION, Please take note: ", err)
+	}
+
 	// Construct a default genesis block
 	genesis := &core.Genesis{
 		Timestamp:  uint64(time.Now().Unix()),
@@ -67,8 +116,8 @@ func (w *wizard) makeGenesis() {
 
 	// Figure out which consensus engine to choose
 	fmt.Println()
-	fmt.Println("Which consensus engine to use? As if you have a choice :D ")
-	fmt.Println(" 1. ATMOS - DxPoS delegated cross-chain proof-of-stake")
+	fmt.Println("Which consensus engine to use? As if you have a choice... Please type 1 or simply click ENTER.")
+	fmt.Println(" 1. ATMOS - DxPoS consensus (delegated `cross-chain proof-of-stake`)")
 
 	choice := w.read()
 	switch {
@@ -76,17 +125,10 @@ func (w *wizard) makeGenesis() {
 
 		genesis.Config.ChainID = new(big.Int).SetUint64(uint64(atmosNetID))
 
-		fmt.Println("Add the account addresses of the AERUM \"bootstrap\" delegates ? (mandatory at least one)")
-
 		var signers []common.Address
-		for {
-			if address := w.readAddress(); address != nil {
-				signers = append(signers, *address)
-				continue
-			}
-			if len(signers) > 0 {
-				break
-			}
+
+		for _, signer := range boostrapDelegate {
+			signers = append(signers, signer)
 		}
 		// Sort the signers and embed into the extra-data section
 		for i := 0; i < len(signers); i++ {
@@ -100,13 +142,12 @@ func (w *wizard) makeGenesis() {
 		for i, signer := range signers {
 			copy(genesis.ExtraData[32+i*common.AddressLength:], signer[:])
 		}
-
 	default:
 		log.Crit("Invalid consensus engine choice", "choice", choice)
 	}
 
 	fmt.Println("\n\n[aerDEV] ----------------------------------------------------------- [aerDEV]")
-	fmt.Println("[aerDEV] --- Just preallocated Aerum Coin to hard coded accounts --- [aerDEV]")
+	fmt.Println("[aerDEV] --- We have just preallocated some Aerum Coin to hard coded accounts --- [aerDEV]")
 	fmt.Println("[aerDEV] ----------------------------------------------------------- [aerDEV]\n\n")
 
 	aerumTeamAddress := map[string]string{
