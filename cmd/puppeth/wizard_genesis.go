@@ -35,9 +35,9 @@ import (
 var (
 	atmosNetID               = 418313827693
 	atmosGovernanceAddress   = "0xbf4ed7b27f1d666546e30d74d50d173d20bca754"
-	atmosBlockInterval       = 2
-	atmosEpochInterval       = 1000
-	atmosGasLimit            = 25000000
+	atmosBlockInterval       = uint64(2)
+	atmosEpochInterval       = uint64(1000)
+	atmosGasLimit            = uint64(25000000)
 	atmosEthereumRPCProvider = "https://rinkeby.infura.io"
 )
 
