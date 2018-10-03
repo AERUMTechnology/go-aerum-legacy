@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"github.com/AERUMTechnology/go-aerum/common"
+	"github.com/AERUMTechnology/go-aerum/contracts/atmosGovernance"
 	"github.com/AERUMTechnology/go-aerum/core"
 	"github.com/AERUMTechnology/go-aerum/log"
 	"github.com/AERUMTechnology/go-aerum/params"
@@ -104,9 +105,9 @@ func (w *wizard) makeGenesis() {
 		log.Crit("Invalid consensus engine choice", "choice", choice)
 	}
 
-	fmt.Println("\n\n[DEV] ----------------------------------------------------------- [DEV]")
-	fmt.Println("[DEV] --- Just preallocated Aerum Coin to hard coded accounts --- [DEV]")
-	fmt.Println("[DEV] ----------------------------------------------------------- [DEV]\n\n")
+	fmt.Println("\n\n[aerDEV] ----------------------------------------------------------- [aerDEV]")
+	fmt.Println("[aerDEV] --- Just preallocated Aerum Coin to hard coded accounts --- [aerDEV]")
+	fmt.Println("[aerDEV] ----------------------------------------------------------- [aerDEV]\n\n")
 
 	aerumTeamAddress := map[string]string{
 		"52c47938be22aab6f22b6608d9fe7f1e42aa8c61": "50000000000000000000000000",
@@ -120,8 +121,10 @@ func (w *wizard) makeGenesis() {
 	for aerumTeamAddress, aerumTeamBalance := range aerumTeamAddress {
 		bigaddr, _ := new(big.Int).SetString(aerumTeamAddress, 16)
 		address := common.BigToAddress(bigaddr)
+
 		bignum := new(big.Int)
 		bignum.SetString(aerumTeamBalance, 10)
+
 		genesis.Alloc[address] = core.GenesisAccount{
 			Balance: bignum,
 		}
