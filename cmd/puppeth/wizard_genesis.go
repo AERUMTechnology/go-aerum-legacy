@@ -24,8 +24,8 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/AERUMTechnology/go-aerum/common"
 	"github.com/AERUMTechnology/go-aerum/accounts/abi/bind"
+	"github.com/AERUMTechnology/go-aerum/common"
 	guvnor "github.com/AERUMTechnology/go-aerum/contracts/atmosGovernance"
 	"github.com/AERUMTechnology/go-aerum/core"
 	"github.com/AERUMTechnology/go-aerum/ethclient"
@@ -35,7 +35,7 @@ import (
 
 // Values for AERUMS Genesis related to ATMOS Consensus
 var (
-	atmosMinDelegateNo = 3
+	atmosMinDelegateNo       = 3
 	atmosNetID               = 418313827693
 	atmosGovernanceAddress   = "0x5df4f6cde8f209ef8f152b59cabce70db21787b3"
 	atmosBlockInterval       = uint64(2)
@@ -72,11 +72,11 @@ func getBootstrapDelegates() ([]common.Address, error) {
 	if len(addresses) < atmosMinDelegateNo {
 		log.Error("Failed to save genesis file", "err", "Not enough Delegates to continue. Contact the aerum team to report this issue.")
 	}
-	
+
 	if len(addresses) >= atmosMinDelegateNo {
-		log.Info( fmt.Sprintf("Fantastic! we found %d delegates. you may proceed in generating a genesis.", len(addresses) )  )
+		log.Info(fmt.Sprintf("Fantastic! we found %d delegates. you may proceed in generating a genesis.", len(addresses)))
 	}
- 
+
 	for _, address := range addresses {
 		bootstrapDelegates = append(bootstrapDelegates, address)
 	}

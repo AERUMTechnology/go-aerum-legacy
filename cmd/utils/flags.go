@@ -571,7 +571,7 @@ var (
 	}
 	// Added by Aerum
 	AtmosAERUMTechnologyApiEndpointFlag = cli.StringFlag{
-		Name:  "atmos.AERUMTechnology.endpoint",
+		Name:  "atmos.ethereum.endpoint",
 		Usage: "AERUMTechnology IPC or RPC endpoint for Atmos synchronization",
 	}
 )
