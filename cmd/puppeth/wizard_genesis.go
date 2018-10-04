@@ -33,70 +33,45 @@ import (
 	"github.com/AERUMTechnology/go-aerum/params"
 )
 
-// Values for AERUMS Genesis related to ATMOS Consensus
-var (
-	atmosMinDelegateNo       = 3
-	atmosNetID               = 418313827693
-	atmosGovernanceAddress   = "0x5df4f6cde8f209ef8f152b59cabce70db21787b3"
-	atmosBlockInterval       = uint64(2)
-	atmosEpochInterval       = uint64(1000)
-	atmosGasLimit            = uint64(25000000)
-	atmosEthereumRPCProvider = "https://rinkeby.infura.io"
-)
-
 func getBootstrapDelegates() ([]common.Address, error) {
-
 	fmt.Println("\n\n[aerDEV] --------------------------------------------------------------------------------------------------------- [aerDEV]")
 	fmt.Println("[aerDEV] --- We are calling our Governance Contract on Ethereum to add our bootstrap signers to this genesis --- [aerDEV]")
-	fmt.Println("[aerDEV] --------------------------------------------------------------------------------------------------------- [aerDEV]\n\n")
-
-	contractAddress := common.HexToAddress(atmosGovernanceAddress)
-
+	fmt.Println("[aerDEV] --------------------------------------------------------------------------------------------------------- [aerDEV]\n\n") 
 	bootstrapDelegates := make([]common.Address, 0)
-
-	ethclient, err := ethclient.Dial(atmosEthereumRPCProvider)
+	ethclient, err := ethclient.Dial( params.NewAtmosEthereumRPCProvider() )
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	caller, err := guvnor.NewAtmosCaller(contractAddress, ethclient)
+	caller, err := guvnor.NewAtmosCaller( params.NewAtmosGovernanceAddress(), ethclient)
 	if err != nil {
 		fmt.Println(err)
 	}
-
 	addresses, err := caller.ShowBootstrapDelegates(&bind.CallOpts{})
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	if len(addresses) < atmosMinDelegateNo {
-		log.Error("Failed to save genesis file", "err", "Not enough Delegates to continue. Contact the aerum team to report this issue.")
+	if len(addresses) < params.NewAtmosMinDelegateNo() {
+		log.Error("Failed to save genesis file", "err",  fmt.Sprintf("Not enough Delegates to continue. Only %d found - Contact the aerum team to report this issue.", len(addresses) ) )
 	}
-
-	if len(addresses) >= atmosMinDelegateNo {
+	if len(addresses) >= params.NewAtmosMinDelegateNo() {
 		log.Info(fmt.Sprintf("Fantastic! we found %d delegates. you may proceed in generating a genesis.", len(addresses)))
 	}
-
 	for _, address := range addresses {
 		bootstrapDelegates = append(bootstrapDelegates, address)
 	}
-
 	return bootstrapDelegates, nil
 }
 
 // makeGenesis creates a new genesis struct based on some user input.
 func (w *wizard) makeGenesis() {
-
 	boostrapDelegate, err := getBootstrapDelegates()
-
 	if err != nil {
-		fmt.Println("ISSUE WITH GENERATION, Please take note: ", err)
+		log.Error("Failed to save genesis file", "err",  fmt.Sprintf("There was a problem getting our bootstrap delegates. Please report this error %s.", err ) )		
 	}
-
 	// Construct a default genesis block
 	genesis := &core.Genesis{
 		Timestamp:  uint64(time.Now().Unix()),
-		GasLimit:   atmosGasLimit,
+		GasLimit:   params.NewAtmosGasLimit(),
 		Difficulty: big.NewInt(1),
 		Alloc:      make(core.GenesisAlloc),
 		Config: &params.ChainConfig{
@@ -106,27 +81,22 @@ func (w *wizard) makeGenesis() {
 			EIP158Block:    big.NewInt(3),
 			ByzantiumBlock: big.NewInt(4),
 			Atmos: &params.AtmosConfig{
-				Period:                     atmosBlockInterval,
-				Epoch:                      atmosEpochInterval,
-				GovernanceAddress:          common.HexToAddress(atmosGovernanceAddress),
-				AERUMTechnologyApiEndpoint: atmosEthereumRPCProvider,
+				Period:                     params.NewAtmosBlockInterval(),
+				Epoch:                      params.NewAtmosEpochInterval(),
+				GovernanceAddress:          params.NewAtmosGovernanceAddress(),
+				AERUMTechnologyApiEndpoint: params.NewAtmosEthereumRPCProvider(),
 			},
 		},
 	}
-
 	// Figure out which consensus engine to choose
 	fmt.Println()
 	fmt.Println("Which consensus engine to use? As if you have a choice... Please type 1 or simply click ENTER.")
 	fmt.Println(" 1. ATMOS - DxPoS consensus (delegated `cross-chain proof-of-stake`)")
-
 	choice := w.read()
 	switch {
 	case len(choice) < 1 || choice == "1":
-
-		genesis.Config.ChainID = new(big.Int).SetUint64(uint64(atmosNetID))
-
+		genesis.Config.ChainID = new(big.Int).SetUint64(uint64( params.NewAtmosNetID() ))
 		var signers []common.Address
-
 		for _, signer := range boostrapDelegate {
 			signers = append(signers, signer)
 		}
@@ -150,35 +120,21 @@ func (w *wizard) makeGenesis() {
 	fmt.Println("[aerDEV] --- We have just preallocated some Aerum Coin to hard coded accounts --- [aerDEV]")
 	fmt.Println("[aerDEV] ----------------------------------------------------------- [aerDEV]\n\n")
 
-	aerumTeamAddress := map[string]string{
-		"52c47938be22aab6f22b6608d9fe7f1e42aa8c61": "50000000000000000000000000",
-		"56220873fb32f35a27f5e0f6604fda2aef439a5f": "10000000000000000000000000",
-		"5ff4b0211b11d83b59d168bf1110a223a6e669fd": "10000000000000000000000000",
-		"827720d8c7d3bab2566eee1ecc2207139dfb25af": "10000000000000000000000000",
-		"8a3eefdbf626ae336272a379bddeb8dcad91d07b": "10000000000000000000000000",
-		"b65b8c2376293fea13f6ed7d2a8467f0949c312d": "10000000000000000000000000",
-	}
-
-	for aerumTeamAddress, aerumTeamBalance := range aerumTeamAddress {
+	for aerumTeamAddress, aerumTeamBalance := range params.NewAerumPreAlloc() {
 		bigaddr, _ := new(big.Int).SetString(aerumTeamAddress, 16)
 		address := common.BigToAddress(bigaddr)
-
 		bignum := new(big.Int)
 		bignum.SetString(aerumTeamBalance, 10)
-
 		genesis.Alloc[address] = core.GenesisAccount{
 			Balance: bignum,
 		}
 	}
-
 	// Add a batch of precompile balances to avoid them getting deleted
 	for i := int64(0); i < 256; i++ {
 		genesis.Alloc[common.BigToAddress(big.NewInt(i))] = core.GenesisAccount{Balance: big.NewInt(1)}
 	}
-
 	// All done, store the genesis and flush to disk
 	log.Info("Configured new genesis block")
-
 	w.conf.Genesis = genesis
 	w.conf.flush()
 }
