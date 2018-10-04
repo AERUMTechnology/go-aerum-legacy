@@ -55,10 +55,10 @@ const (
 // Atmos proof-of-authority protocol constants.
 var (
 	// Added by Aerum
-	BlockReward *big.Int = big.NewInt(0.487e+18) // Block reward in wei for successfully mining a block
+	BlockReward *big.Int = params.NewAtmosBlockRewards()// Block reward in wei for successfully mining a block
 
-	epochLength = uint64(1000) // Default number of blocks after which to checkpoint and reset the pending votes
-	blockPeriod = uint64(2)    // Default minimum difference between two consecutive block's timestamps
+	epochLength = params.NewAtmosEpochInterval() // Default number of blocks after which to checkpoint and reset the pending votes
+	blockPeriod = params.NewAtmosBlockInterval()    // Default minimum difference between two consecutive block's timestamps
 
 	extraVanity = 32 // Fixed number of extra-data prefix bytes reserved for signer vanity
 	extraSeal   = 65 // Fixed number of extra-data suffix bytes reserved for signer seal
