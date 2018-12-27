@@ -708,20 +708,20 @@ func getComposers(config *params.AtmosConfig, number uint64, parents []*types.He
 		return nil, err
 	}
 
-	// TODO: Uncomment later, for now use test contract
-	// caller, err := NewGovernanceCaller(config.GovernanceAddress, ethclient)
 	caller, err := guvnor.NewAtmosCaller(config.GovernanceAddress, ethclient)
 	if err != nil {
 		return nil, err
 	}
 
-	// Get previous block time
-	prevBlockTimestamp := big.NewInt(0)
+	// Get previous block time and minus Ethereum sync time
+	composersCheckTimestamp := big.NewInt(0)
 	if len(parents) > 0 {
-		prevBlockTimestamp = parents[len(parents)-1].Time
+		// Wait for 20 minutes to make sure Ethereum syncs and there is no forks
+		ethereumSyncTimeoutInSeconds := big.NewInt(20 * 60)
+		composersCheckTimestamp = new(big.Int).Sub(parents[len(parents)-1].Time, ethereumSyncTimeoutInSeconds)
 	}
 
-	addresses, err := caller.GetComposers(&bind.CallOpts{}, big.NewInt(int64(number)), prevBlockTimestamp)
+	addresses, err := caller.GetComposers(&bind.CallOpts{}, big.NewInt(int64(number)), composersCheckTimestamp)
 	if err != nil {
 		return nil, err
 	}
