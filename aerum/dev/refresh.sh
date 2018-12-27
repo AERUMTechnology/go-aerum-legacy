@@ -27,7 +27,7 @@ GENESISFILENAME="genesis.json"
 CHAINID=2018
 
 # shortcut or geth
-export GETH=$PWD/../../build/bin/geth
+export GETH=$PWD/../../build/bin/aerum
 
 printf "${LITEGREY}#############################################################################################################\n"
 printf "####################################### Aerum Consensus Engine DevKit #######################################\n"

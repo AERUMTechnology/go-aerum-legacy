@@ -139,7 +139,7 @@ func New(ctx *node.ServiceContext, config *Config) (*AERUMTechnology, error) {
 		bloomIndexer:   NewBloomIndexer(chainDb, params.BloomBitsBlocks),
 	}
 
-	log.Info("Initialising AERUMTechnology protocol", "versions", ProtocolVersions, "network", config.NetworkId)
+	log.Info("Initialising Aerum protocol", "versions", ProtocolVersions, "network", config.NetworkId)
 
 	if !config.SkipBcVersionCheck {
 		bcVersion := rawdb.ReadDatabaseVersion(chainDb)
