@@ -5,7 +5,7 @@ import os
 from web3 import Web3, HTTPProvider
 from web3.middleware import geth_poa_middleware
 
-contract_address     = '0x6c2a3690db1d11e50d38c2250db06d6359feabac'
+contract_address     = '0xbc5f91fc3bad1c6f3ecd69c3bb34c849ab9797b4'
 wallet_private_key   = 'e0f95f7b4dd052594f7656171726f342dfea53af717d5bb85ab01e2a224dca14'
 wallet_address       = '0xf38edc62732c418ee18bebf89cc063b3d1b57e0c'
 contract_abi         = '[ { "inputs": [], "payable": false, "stateMutability": "nonpayable", "type": "constructor" }, { "constant": false, "inputs": [ { "name": "aerumBlock", "type": "uint256" }, { "name": "composer", "type": "address" } ], "name": "addComposer", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [ { "name": "aerumBlock", "type": "uint256" }, { "name": "composer", "type": "address" } ], "name": "removeComposer", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [ { "name": "aerumBlock", "type": "uint256" }, { "name": "timestamp", "type": "uint256" } ], "name": "getComposers", "outputs": [ { "name": "", "type": "address[]" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "aerumBlock", "type": "uint256" } ], "name": "getValidComposers", "outputs": [ { "name": "", "type": "address[]" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [], "name": "clean", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" } ]'
