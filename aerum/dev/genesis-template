@@ -11,7 +11,7 @@
       "period": 2,
       "epoch": 50,
       "governanceAddress": "0xd9f4c528df426593b7a5008956310e202d00025d",
-      "AERUMTechnologyApiEndpoint": "https://rinkeby.infura.io"
+      "EthereumApiEndpoint": "https://rinkeby.infura.io"
     }
   },
   "nonce": "0x0",

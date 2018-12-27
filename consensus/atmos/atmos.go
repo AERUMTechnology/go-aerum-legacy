@@ -703,7 +703,7 @@ func (a *Atmos) APIs(chain consensus.ChainReader) []rpc.API {
 
 // Added by Aerum
 func getComposers(config *params.AtmosConfig, number uint64, parents []*types.Header) ([]common.Address, error) {
-	ethclient, err := ethclient.Dial(config.AERUMTechnologyApiEndpoint)
+	ethclient, err := ethclient.Dial(config.EthereumApiEndpoint)
 	if err != nil {
 		return nil, err
 	}

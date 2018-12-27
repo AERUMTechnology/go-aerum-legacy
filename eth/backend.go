@@ -119,8 +119,8 @@ func New(ctx *node.ServiceContext, config *Config) (*AERUMTechnology, error) {
 	}
 	// Added by Aerum
 	// Override AERUMTechnology API endpoint for Atmos consensus
-	if chainConfig.Atmos != nil && config.AERUMTechnologyApiEndpoint != "" {
-		chainConfig.Atmos.AERUMTechnologyApiEndpoint = config.AERUMTechnologyApiEndpoint
+	if chainConfig.Atmos != nil && config.EthereumApiEndpoint != "" {
+		chainConfig.Atmos.EthereumApiEndpoint = config.EthereumApiEndpoint
 	}
 	log.Info("Initialised chain configuration", "config", chainConfig)
 
