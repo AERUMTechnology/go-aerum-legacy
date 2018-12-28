@@ -729,8 +729,10 @@ func getComposers(chain consensus.ChainReader, config *params.AtmosConfig, numbe
 
 	message := "New signers loaded: "
 	for _, address := range addresses {
-		message += " [" + address.Hex() + "] "
+		message += "[" + address.Hex() + "] "
 	}
+	message += "at time " + composersCheckTimestamp.String()
+
 
 	log.Info(message)
 
