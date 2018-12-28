@@ -170,7 +170,7 @@ type AtmosConfig struct {
 	Period                     uint64         `json:"period"`              // Number of seconds between blocks to enforce
 	Epoch                      uint64         `json:"epoch"`               // Epoch length to reset votes and checkpoint
 	GovernanceAddress          common.Address `json:"governanceAddress"`   // Governance contract AERUMTechnology address
-	AERUMTechnologyApiEndpoint string         `json:"ethereumApiEndpoint"` // AERUMTechnology node API endpoint (ipc, http, etc)
+	EthereumApiEndpoint string         `json:"ethereumApiEndpoint"` // AERUMTechnology node API endpoint (ipc, http, etc)
 }
 
 // Added by Aerum

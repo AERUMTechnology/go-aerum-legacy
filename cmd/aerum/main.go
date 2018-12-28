@@ -156,7 +156,7 @@ var (
 
 	// Added by Aerum
 	aerumFlags = []cli.Flag{
-		utils.AtmosAERUMTechnologyApiEndpointFlag,
+		utils.AtmosEthereumApiEndpointFlag,
 	}
 )
 

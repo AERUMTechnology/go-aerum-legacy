@@ -570,9 +570,9 @@ var (
 		Value: "localhost",
 	}
 	// Added by Aerum
-	AtmosAERUMTechnologyApiEndpointFlag = cli.StringFlag{
+	AtmosEthereumApiEndpointFlag = cli.StringFlag{
 		Name:  "atmos.ethereum.endpoint",
-		Usage: "AERUMTechnology IPC or RPC endpoint for Atmos synchronization",
+		Usage: "Ethereum IPC or RPC endpoint for Atmos synchronization",
 	}
 )
 
@@ -1249,9 +1249,9 @@ func SetupMetrics(ctx *cli.Context) {
 
 // Added by Aerum
 func SetAtmosConfig(ctx *cli.Context, cfg *eth.Config) {
-	if ctx.GlobalIsSet(AtmosAERUMTechnologyApiEndpointFlag.Name) {
-		log.Info("AERUMTechnology API endpoint: ", ctx.GlobalString(AtmosAERUMTechnologyApiEndpointFlag.Name))
-		cfg.AERUMTechnologyApiEndpoint = ctx.GlobalString(AtmosAERUMTechnologyApiEndpointFlag.Name)
+	if ctx.GlobalIsSet(AtmosEthereumApiEndpointFlag.Name) {
+		log.Info("Ethereum API endpoint: ", ctx.GlobalString(AtmosEthereumApiEndpointFlag.Name))
+		cfg.EthereumApiEndpoint = ctx.GlobalString(AtmosEthereumApiEndpointFlag.Name)
 	}
 }
 

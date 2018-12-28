@@ -423,7 +423,7 @@ func (a *Atmos) snapshot(chain consensus.ChainReader, number uint64, hash common
 				break
 			}
 			// If snapshot not found in db load it from governance contract
-			signers, err := getComposers(a.config, number, parents)
+			signers, err := getComposers(chain, a.config, number)
 			if err != nil {
 				log.Error("Loaded snapshot from governance contract failed", "number", number, "hash", hash, "error", err)
 				return nil, err
@@ -702,34 +702,37 @@ func (a *Atmos) APIs(chain consensus.ChainReader) []rpc.API {
 }
 
 // Added by Aerum
-func getComposers(config *params.AtmosConfig, number uint64, parents []*types.Header) ([]common.Address, error) {
-	ethclient, err := ethclient.Dial(config.AERUMTechnologyApiEndpoint)
+func getComposers(chain consensus.ChainReader, config *params.AtmosConfig, number uint64) ([]common.Address, error) {
+	ethclient, err := ethclient.Dial(config.EthereumApiEndpoint)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: Uncomment later, for now use test contract
-	// caller, err := NewGovernanceCaller(config.GovernanceAddress, ethclient)
 	caller, err := guvnor.NewAtmosCaller(config.GovernanceAddress, ethclient)
 	if err != nil {
 		return nil, err
 	}
 
-	// Get previous block time
-	prevBlockTimestamp := big.NewInt(0)
-	if len(parents) > 0 {
-		prevBlockTimestamp = parents[len(parents)-1].Time
+	composersCheckTimestamp := big.NewInt(0)
+	if number > 0 {
+		// Get previous block to get time from it
+		prevHeader := chain.GetHeaderByNumber(number - 1)
+		// Take composers for 20 minutes before now to make sure Ethereum syncs and there is no forks
+		ethereumSyncTimeoutInSeconds := big.NewInt(20 * 60)
+		composersCheckTimestamp = new(big.Int).Sub(prevHeader.Time, ethereumSyncTimeoutInSeconds)
 	}
 
-	addresses, err := caller.GetComposers(&bind.CallOpts{}, big.NewInt(int64(number)), prevBlockTimestamp)
+	addresses, err := caller.GetComposers(&bind.CallOpts{}, big.NewInt(int64(number)), composersCheckTimestamp)
 	if err != nil {
 		return nil, err
 	}
 
 	message := "New signers loaded: "
 	for _, address := range addresses {
-		message += " [" + address.Hex() + "] "
+		message += "[" + address.Hex() + "] "
 	}
+	message += "at time " + composersCheckTimestamp.String()
+
 
 	log.Info(message)
 

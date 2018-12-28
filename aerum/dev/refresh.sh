@@ -20,14 +20,14 @@ WHITE='\033[1;37m'
 NC='\033[0m' # No Color
 
 # script variables
-STEPS=9
+STEPS=7
 NODES=7
 SIGNINGNODES=4
 GENESISFILENAME="genesis.json"
 CHAINID=2018
 
 # shortcut or geth
-export GETH=$PWD/../../build/bin/geth
+export GETH=$PWD/../../build/bin/aerum
 
 printf "${LITEGREY}#############################################################################################################\n"
 printf "####################################### Aerum Consensus Engine DevKit #######################################\n"
@@ -108,7 +108,7 @@ printf "\n"
 printf "Step 7 of  ${STEPS}...\n"
 printf "${LITEGREEN}Creating static-nodes.json file in each of our networks nodes (speeds up p2p connectivity) ${NC}\n"
 
-touch $PWD/nodes/{node1,node2,node3,node4,node5,node6,node7}/data/geth/static-nodes.json
+touch $PWD/nodes/{node1,node2,node3,node4,node5,node6,node7}/data/aerum/static-nodes.json
 #
 # Previously it was necessary to launch geth in order for it to invoke the functions necessary to generate an ECDSA nodekey
 # After realising that the function func (c *Config) NodeKey() *ecdsa.PrivateKey checks first to see if a key exists in the dir
@@ -116,21 +116,21 @@ touch $PWD/nodes/{node1,node2,node3,node4,node5,node6,node7}/data/geth/static-no
 #
 
 # For each node:
-# generate enode from node key https://AERUMTechnology.stackexchange.com/questions/28970/how-to-produce-enode-from-node-key
+# generate enode from node key https://ethereum.stackexchange.com/questions/28970/how-to-produce-enode-from-node-key
 # NODE1key=$(cat $PWD/nodes/node1/data/geth/nodekey)
 # NODE1enode=$($PWD/geth/geth-dev/build/bin/bootnode -nodekeyhex $NODE1key -writeaddress)
 
-# Add a private key to each geth node
-touch $PWD/nodes/node1/data/geth/nodekey && echo "43ad244d69706ad9ed08ab969ba19a5adcf8b4c53fbfd66e0d8a5cf8432cd118" > $PWD/nodes/node1/data/geth/nodekey
-touch $PWD/nodes/node2/data/geth/nodekey && echo "bd838d3f2699205888a7330238326f94323fb27c0f3a5607ffead80a0ce1a9ea" > $PWD/nodes/node2/data/geth/nodekey
-touch $PWD/nodes/node3/data/geth/nodekey && echo "1086c0cb6cc3f76c1c60851359d3790a3a2af60e76cd2fb8c6d3b760700ad0af" > $PWD/nodes/node3/data/geth/nodekey
-touch $PWD/nodes/node4/data/geth/nodekey && echo "a7b05d288e56476b3bc0587e4b3994820bdd626c16bbc807cd650ce25e76f658" > $PWD/nodes/node4/data/geth/nodekey
-touch $PWD/nodes/node5/data/geth/nodekey && echo "225b75b82e24356d9c368d3ca29931997a28ad149e9e158cdba7fe4cfa387d08" > $PWD/nodes/node5/data/geth/nodekey
-touch $PWD/nodes/node6/data/geth/nodekey && echo "6df2a56dc07b8c61bd72d1d8177c0c04b7d7d5dfc772bb045fd9d64ae51ea2a2" > $PWD/nodes/node6/data/geth/nodekey
-touch $PWD/nodes/node7/data/geth/nodekey && echo "6033f4ddf345f8ffddbb9390716be33ecfb55d96c0137b965370b5fbe365bab9" > $PWD/nodes/node7/data/geth/nodekey
+# Add a private key to each aerum node
+touch $PWD/nodes/node1/data/aerum/nodekey && echo "43ad244d69706ad9ed08ab969ba19a5adcf8b4c53fbfd66e0d8a5cf8432cd118" > $PWD/nodes/node1/data/aerum/nodekey
+touch $PWD/nodes/node2/data/aerum/nodekey && echo "bd838d3f2699205888a7330238326f94323fb27c0f3a5607ffead80a0ce1a9ea" > $PWD/nodes/node2/data/aerum/nodekey
+touch $PWD/nodes/node3/data/aerum/nodekey && echo "1086c0cb6cc3f76c1c60851359d3790a3a2af60e76cd2fb8c6d3b760700ad0af" > $PWD/nodes/node3/data/aerum/nodekey
+touch $PWD/nodes/node4/data/aerum/nodekey && echo "a7b05d288e56476b3bc0587e4b3994820bdd626c16bbc807cd650ce25e76f658" > $PWD/nodes/node4/data/aerum/nodekey
+touch $PWD/nodes/node5/data/aerum/nodekey && echo "225b75b82e24356d9c368d3ca29931997a28ad149e9e158cdba7fe4cfa387d08" > $PWD/nodes/node5/data/aerum/nodekey
+touch $PWD/nodes/node6/data/aerum/nodekey && echo "6df2a56dc07b8c61bd72d1d8177c0c04b7d7d5dfc772bb045fd9d64ae51ea2a2" > $PWD/nodes/node6/data/aerum/nodekey
+touch $PWD/nodes/node7/data/aerum/nodekey && echo "6033f4ddf345f8ffddbb9390716be33ecfb55d96c0137b965370b5fbe365bab9" > $PWD/nodes/node7/data/aerum/nodekey
 
 # add valid public key / enode to each node
-cat <<EOT >> $PWD/nodes/node1/data/geth/static-nodes.json
+cat <<EOT >> $PWD/nodes/node1/data/aerum/static-nodes.json
 [
   "enode://bea6f37f0f8961d665f805c4bb7c1f2711fd3499e0eb9a6ccfc08fc79443b0cd946e6961113df9090a71c6ba6b1c78b9a555f6e7bae8cfe680a028dc0d36c0aa@127.0.0.1:2222",
   "enode://b5ab72b7e6763147ce185ac218d50b40298062c265c49333558b031bf0516707751788e6c9aa3cfa8d3772fdf35792eeaf75aa1e044af735b9a6f41193fd9f28@127.0.0.1:3333",
@@ -140,7 +140,7 @@ cat <<EOT >> $PWD/nodes/node1/data/geth/static-nodes.json
   "enode://a44d35662f91938752b9e50bc778941d51099b406c4127e16363f016c3adc301fdd36de5c8560b28aee4770b74290f9512e091e58d2906b540037c2a8a75c701@127.0.0.1:7777"
 ]
 EOT
-cat <<EOT >> $PWD/nodes/node2/data/geth/static-nodes.json
+cat <<EOT >> $PWD/nodes/node2/data/aerum/static-nodes.json
 [
   "enode://b5ab72b7e6763147ce185ac218d50b40298062c265c49333558b031bf0516707751788e6c9aa3cfa8d3772fdf35792eeaf75aa1e044af735b9a6f41193fd9f28@127.0.0.1:3333",
   "enode://90f0be041a3878da763ca5187663a1508ee7f2e9c3b095c6f8c0453e618be43fb4f101f62b231e1e4e1494f413a7a8e590aff34a6ed006f29bc01785b359bbf1@127.0.0.1:4444",
@@ -149,7 +149,7 @@ cat <<EOT >> $PWD/nodes/node2/data/geth/static-nodes.json
   "enode://a44d35662f91938752b9e50bc778941d51099b406c4127e16363f016c3adc301fdd36de5c8560b28aee4770b74290f9512e091e58d2906b540037c2a8a75c701@127.0.0.1:7777"
 ]
 EOT
-cat <<EOT >> $PWD/nodes/node3/data/geth/static-nodes.json
+cat <<EOT >> $PWD/nodes/node3/data/aerum/static-nodes.json
 [
   "enode://bea6f37f0f8961d665f805c4bb7c1f2711fd3499e0eb9a6ccfc08fc79443b0cd946e6961113df9090a71c6ba6b1c78b9a555f6e7bae8cfe680a028dc0d36c0aa@127.0.0.1:2222",
   "enode://90f0be041a3878da763ca5187663a1508ee7f2e9c3b095c6f8c0453e618be43fb4f101f62b231e1e4e1494f413a7a8e590aff34a6ed006f29bc01785b359bbf1@127.0.0.1:4444",
@@ -158,7 +158,7 @@ cat <<EOT >> $PWD/nodes/node3/data/geth/static-nodes.json
   "enode://a44d35662f91938752b9e50bc778941d51099b406c4127e16363f016c3adc301fdd36de5c8560b28aee4770b74290f9512e091e58d2906b540037c2a8a75c701@127.0.0.1:7777"
 ]
 EOT
-cat <<EOT >> $PWD/nodes/node4/data/geth/static-nodes.json
+cat <<EOT >> $PWD/nodes/node4/data/aerum/static-nodes.json
 [
   "enode://bea6f37f0f8961d665f805c4bb7c1f2711fd3499e0eb9a6ccfc08fc79443b0cd946e6961113df9090a71c6ba6b1c78b9a555f6e7bae8cfe680a028dc0d36c0aa@127.0.0.1:2222",
   "enode://b5ab72b7e6763147ce185ac218d50b40298062c265c49333558b031bf0516707751788e6c9aa3cfa8d3772fdf35792eeaf75aa1e044af735b9a6f41193fd9f28@127.0.0.1:3333",
@@ -167,7 +167,7 @@ cat <<EOT >> $PWD/nodes/node4/data/geth/static-nodes.json
   "enode://a44d35662f91938752b9e50bc778941d51099b406c4127e16363f016c3adc301fdd36de5c8560b28aee4770b74290f9512e091e58d2906b540037c2a8a75c701@127.0.0.1:7777"
 ]
 EOT
-cat <<EOT >> $PWD/nodes/node5/data/geth/static-nodes.json
+cat <<EOT >> $PWD/nodes/node5/data/aerum/static-nodes.json
 [
   "enode://bea6f37f0f8961d665f805c4bb7c1f2711fd3499e0eb9a6ccfc08fc79443b0cd946e6961113df9090a71c6ba6b1c78b9a555f6e7bae8cfe680a028dc0d36c0aa@127.0.0.1:2222",
   "enode://b5ab72b7e6763147ce185ac218d50b40298062c265c49333558b031bf0516707751788e6c9aa3cfa8d3772fdf35792eeaf75aa1e044af735b9a6f41193fd9f28@127.0.0.1:3333",
@@ -176,7 +176,7 @@ cat <<EOT >> $PWD/nodes/node5/data/geth/static-nodes.json
   "enode://a44d35662f91938752b9e50bc778941d51099b406c4127e16363f016c3adc301fdd36de5c8560b28aee4770b74290f9512e091e58d2906b540037c2a8a75c701@127.0.0.1:7777"
 ]
 EOT
-cat <<EOT >> $PWD/nodes/node6/data/geth/static-nodes.json
+cat <<EOT >> $PWD/nodes/node6/data/aerum/static-nodes.json
 [
   "enode://bea6f37f0f8961d665f805c4bb7c1f2711fd3499e0eb9a6ccfc08fc79443b0cd946e6961113df9090a71c6ba6b1c78b9a555f6e7bae8cfe680a028dc0d36c0aa@127.0.0.1:2222",
   "enode://b5ab72b7e6763147ce185ac218d50b40298062c265c49333558b031bf0516707751788e6c9aa3cfa8d3772fdf35792eeaf75aa1e044af735b9a6f41193fd9f28@127.0.0.1:3333",
@@ -185,7 +185,7 @@ cat <<EOT >> $PWD/nodes/node6/data/geth/static-nodes.json
   "enode://a44d35662f91938752b9e50bc778941d51099b406c4127e16363f016c3adc301fdd36de5c8560b28aee4770b74290f9512e091e58d2906b540037c2a8a75c701@127.0.0.1:7777"
 ]
 EOT
-cat <<EOT >> $PWD/nodes/node7/data/geth/static-nodes.json
+cat <<EOT >> $PWD/nodes/node7/data/aerum/static-nodes.json
 [
   "enode://bea6f37f0f8961d665f805c4bb7c1f2711fd3499e0eb9a6ccfc08fc79443b0cd946e6961113df9090a71c6ba6b1c78b9a555f6e7bae8cfe680a028dc0d36c0aa@127.0.0.1:2222",
   "enode://b5ab72b7e6763147ce185ac218d50b40298062c265c49333558b031bf0516707751788e6c9aa3cfa8d3772fdf35792eeaf75aa1e044af735b9a6f41193fd9f28@127.0.0.1:3333",
@@ -196,8 +196,8 @@ cat <<EOT >> $PWD/nodes/node7/data/geth/static-nodes.json
 EOT
 
 echo "Static Nodes in use..."
-cat $PWD/nodes/node1/data/geth/static-nodes.json
+cat $PWD/nodes/node1/data/aerum/static-nodes.json
 
 rm $PWD/$GENESISFILENAME.bak
 printf "\n\n"
-# end of step 9
+# end of step 7

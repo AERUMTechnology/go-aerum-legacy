@@ -114,7 +114,7 @@ type Config struct {
 
 	// Added by Aerum
 	// Aerum settings
-	AERUMTechnologyApiEndpoint string
+	EthereumApiEndpoint string
 
 	// Miscellaneous options
 	DocRoot string `toml:"-"`

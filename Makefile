@@ -11,7 +11,7 @@
 GOBIN = $(shell pwd)/build/bin
 GO ?= latest
 
-aerum:
+aerum-go:
 	build/env.sh go run build/ci.go install ./cmd/aerum
 	@echo "Done building."
 	@echo "Run \"$(GOBIN)/aerum\" to launch aerum."

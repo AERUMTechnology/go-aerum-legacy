@@ -1,2 +1,2 @@
 #!/bin/bash
-make --directory $PWD/../.. aerum
+make --directory $PWD/../.. aerum-go

@@ -14,31 +14,31 @@ import (
 )
 
 // AtmosABI is the input ABI used to generate the binding from.
-const AtmosABI = "[{\"constant\":false,\"inputs\":[{\"name\":\"aerumBlock\",\"type\":\"uint256\"},{\"name\":\"composer\",\"type\":\"address\"}],\"name\":\"addComposer\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"aerumBlock\",\"type\":\"uint256\"},{\"name\":\"composer\",\"type\":\"address\"}],\"name\":\"removeComposer\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"cleanBootstrapDelegates\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"aerumBlock\",\"type\":\"uint256\"},{\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"getComposers\",\"outputs\":[{\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"delegateIndex\",\"type\":\"uint16\"},{\"name\":\"delegate\",\"type\":\"address\"}],\"name\":\"addBoostrapDelegate\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"showBootstrapDelegates\",\"outputs\":[{\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"delegateIndex\",\"type\":\"uint16\"},{\"name\":\"delegate\",\"type\":\"address\"}],\"name\":\"removeComposer\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"aerumBlock\",\"type\":\"uint256\"}],\"name\":\"getValidComposers\",\"outputs\":[{\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"clean\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}]"
+const AtmosABI = "[{\"constant\":true,\"inputs\":[{\"name\":\"_blockNum\",\"type\":\"uint256\"},{\"name\":\"_timestamp\",\"type\":\"uint256\"}],\"name\":\"getComposers\",\"outputs\":[{\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
-// Atmos is an auto generated Go binding around an AERUMTechnology contract.
+// Atmos is an auto generated Go binding around an Ethereum contract.
 type Atmos struct {
 	AtmosCaller     // Read-only binding to the contract
 	AtmosTransactor // Write-only binding to the contract
 	AtmosFilterer   // Log filterer for contract events
 }
 
-// AtmosCaller is an auto generated read-only Go binding around an AERUMTechnology contract.
+// AtmosCaller is an auto generated read-only Go binding around an Ethereum contract.
 type AtmosCaller struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// AtmosTransactor is an auto generated write-only Go binding around an AERUMTechnology contract.
+// AtmosTransactor is an auto generated write-only Go binding around an Ethereum contract.
 type AtmosTransactor struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// AtmosFilterer is an auto generated log filtering Go binding around an AERUMTechnology contract events.
+// AtmosFilterer is an auto generated log filtering Go binding around an Ethereum contract events.
 type AtmosFilterer struct {
 	contract *bind.BoundContract // Generic contract wrapper for the low level calls
 }
 
-// AtmosSession is an auto generated Go binding around an AERUMTechnology contract,
+// AtmosSession is an auto generated Go binding around an Ethereum contract,
 // with pre-set call and transact options.
 type AtmosSession struct {
 	Contract     *Atmos            // Generic contract binding to set the session for
@@ -46,31 +46,31 @@ type AtmosSession struct {
 	TransactOpts bind.TransactOpts // Transaction auth options to use throughout this session
 }
 
-// AtmosCallerSession is an auto generated read-only Go binding around an AERUMTechnology contract,
+// AtmosCallerSession is an auto generated read-only Go binding around an Ethereum contract,
 // with pre-set call options.
 type AtmosCallerSession struct {
 	Contract *AtmosCaller  // Generic contract caller binding to set the session for
 	CallOpts bind.CallOpts // Call options to use throughout this session
 }
 
-// AtmosTransactorSession is an auto generated write-only Go binding around an AERUMTechnology contract,
+// AtmosTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
 // with pre-set transact options.
 type AtmosTransactorSession struct {
 	Contract     *AtmosTransactor  // Generic contract transactor binding to set the session for
 	TransactOpts bind.TransactOpts // Transaction auth options to use throughout this session
 }
 
-// AtmosRaw is an auto generated low-level Go binding around an AERUMTechnology contract.
+// AtmosRaw is an auto generated low-level Go binding around an Ethereum contract.
 type AtmosRaw struct {
 	Contract *Atmos // Generic contract binding to access the raw methods on
 }
 
-// AtmosCallerRaw is an auto generated low-level read-only Go binding around an AERUMTechnology contract.
+// AtmosCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
 type AtmosCallerRaw struct {
 	Contract *AtmosCaller // Generic read-only contract binding to access the raw methods on
 }
 
-// AtmosTransactorRaw is an auto generated low-level write-only Go binding around an AERUMTechnology contract.
+// AtmosTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
 type AtmosTransactorRaw struct {
 	Contract *AtmosTransactor // Generic write-only contract binding to access the raw methods on
 }
@@ -160,183 +160,26 @@ func (_Atmos *AtmosTransactorRaw) Transact(opts *bind.TransactOpts, method strin
 
 // GetComposers is a free data retrieval call binding the contract method 0x296ea742.
 //
-// Solidity: function getComposers(aerumBlock uint256, timestamp uint256) constant returns(address[])
-func (_Atmos *AtmosCaller) GetComposers(opts *bind.CallOpts, aerumBlock *big.Int, timestamp *big.Int) ([]common.Address, error) {
+// Solidity: function getComposers(_blockNum uint256, _timestamp uint256) constant returns(address[])
+func (_Atmos *AtmosCaller) GetComposers(opts *bind.CallOpts, _blockNum *big.Int, _timestamp *big.Int) ([]common.Address, error) {
 	var (
 		ret0 = new([]common.Address)
 	)
 	out := ret0
-	err := _Atmos.contract.Call(opts, out, "getComposers", aerumBlock, timestamp)
+	err := _Atmos.contract.Call(opts, out, "getComposers", _blockNum, _timestamp)
 	return *ret0, err
 }
 
 // GetComposers is a free data retrieval call binding the contract method 0x296ea742.
 //
-// Solidity: function getComposers(aerumBlock uint256, timestamp uint256) constant returns(address[])
-func (_Atmos *AtmosSession) GetComposers(aerumBlock *big.Int, timestamp *big.Int) ([]common.Address, error) {
-	return _Atmos.Contract.GetComposers(&_Atmos.CallOpts, aerumBlock, timestamp)
+// Solidity: function getComposers(_blockNum uint256, _timestamp uint256) constant returns(address[])
+func (_Atmos *AtmosSession) GetComposers(_blockNum *big.Int, _timestamp *big.Int) ([]common.Address, error) {
+	return _Atmos.Contract.GetComposers(&_Atmos.CallOpts, _blockNum, _timestamp)
 }
 
 // GetComposers is a free data retrieval call binding the contract method 0x296ea742.
 //
-// Solidity: function getComposers(aerumBlock uint256, timestamp uint256) constant returns(address[])
-func (_Atmos *AtmosCallerSession) GetComposers(aerumBlock *big.Int, timestamp *big.Int) ([]common.Address, error) {
-	return _Atmos.Contract.GetComposers(&_Atmos.CallOpts, aerumBlock, timestamp)
-}
-
-// GetValidComposers is a free data retrieval call binding the contract method 0xace87337.
-//
-// Solidity: function getValidComposers(aerumBlock uint256) constant returns(address[])
-func (_Atmos *AtmosCaller) GetValidComposers(opts *bind.CallOpts, aerumBlock *big.Int) ([]common.Address, error) {
-	var (
-		ret0 = new([]common.Address)
-	)
-	out := ret0
-	err := _Atmos.contract.Call(opts, out, "getValidComposers", aerumBlock)
-	return *ret0, err
-}
-
-// GetValidComposers is a free data retrieval call binding the contract method 0xace87337.
-//
-// Solidity: function getValidComposers(aerumBlock uint256) constant returns(address[])
-func (_Atmos *AtmosSession) GetValidComposers(aerumBlock *big.Int) ([]common.Address, error) {
-	return _Atmos.Contract.GetValidComposers(&_Atmos.CallOpts, aerumBlock)
-}
-
-// GetValidComposers is a free data retrieval call binding the contract method 0xace87337.
-//
-// Solidity: function getValidComposers(aerumBlock uint256) constant returns(address[])
-func (_Atmos *AtmosCallerSession) GetValidComposers(aerumBlock *big.Int) ([]common.Address, error) {
-	return _Atmos.Contract.GetValidComposers(&_Atmos.CallOpts, aerumBlock)
-}
-
-// ShowBootstrapDelegates is a free data retrieval call binding the contract method 0x959bbb1c.
-//
-// Solidity: function showBootstrapDelegates() constant returns(address[])
-func (_Atmos *AtmosCaller) ShowBootstrapDelegates(opts *bind.CallOpts) ([]common.Address, error) {
-	var (
-		ret0 = new([]common.Address)
-	)
-	out := ret0
-	err := _Atmos.contract.Call(opts, out, "showBootstrapDelegates")
-	return *ret0, err
-}
-
-// ShowBootstrapDelegates is a free data retrieval call binding the contract method 0x959bbb1c.
-//
-// Solidity: function showBootstrapDelegates() constant returns(address[])
-func (_Atmos *AtmosSession) ShowBootstrapDelegates() ([]common.Address, error) {
-	return _Atmos.Contract.ShowBootstrapDelegates(&_Atmos.CallOpts)
-}
-
-// ShowBootstrapDelegates is a free data retrieval call binding the contract method 0x959bbb1c.
-//
-// Solidity: function showBootstrapDelegates() constant returns(address[])
-func (_Atmos *AtmosCallerSession) ShowBootstrapDelegates() ([]common.Address, error) {
-	return _Atmos.Contract.ShowBootstrapDelegates(&_Atmos.CallOpts)
-}
-
-// AddBoostrapDelegate is a paid mutator transaction binding the contract method 0x3a0d5884.
-//
-// Solidity: function addBoostrapDelegate(delegateIndex uint16, delegate address) returns()
-func (_Atmos *AtmosTransactor) AddBoostrapDelegate(opts *bind.TransactOpts, delegateIndex uint16, delegate common.Address) (*types.Transaction, error) {
-	return _Atmos.contract.Transact(opts, "addBoostrapDelegate", delegateIndex, delegate)
-}
-
-// AddBoostrapDelegate is a paid mutator transaction binding the contract method 0x3a0d5884.
-//
-// Solidity: function addBoostrapDelegate(delegateIndex uint16, delegate address) returns()
-func (_Atmos *AtmosSession) AddBoostrapDelegate(delegateIndex uint16, delegate common.Address) (*types.Transaction, error) {
-	return _Atmos.Contract.AddBoostrapDelegate(&_Atmos.TransactOpts, delegateIndex, delegate)
-}
-
-// AddBoostrapDelegate is a paid mutator transaction binding the contract method 0x3a0d5884.
-//
-// Solidity: function addBoostrapDelegate(delegateIndex uint16, delegate address) returns()
-func (_Atmos *AtmosTransactorSession) AddBoostrapDelegate(delegateIndex uint16, delegate common.Address) (*types.Transaction, error) {
-	return _Atmos.Contract.AddBoostrapDelegate(&_Atmos.TransactOpts, delegateIndex, delegate)
-}
-
-// AddComposer is a paid mutator transaction binding the contract method 0x08b1cc14.
-//
-// Solidity: function addComposer(aerumBlock uint256, composer address) returns()
-func (_Atmos *AtmosTransactor) AddComposer(opts *bind.TransactOpts, aerumBlock *big.Int, composer common.Address) (*types.Transaction, error) {
-	return _Atmos.contract.Transact(opts, "addComposer", aerumBlock, composer)
-}
-
-// AddComposer is a paid mutator transaction binding the contract method 0x08b1cc14.
-//
-// Solidity: function addComposer(aerumBlock uint256, composer address) returns()
-func (_Atmos *AtmosSession) AddComposer(aerumBlock *big.Int, composer common.Address) (*types.Transaction, error) {
-	return _Atmos.Contract.AddComposer(&_Atmos.TransactOpts, aerumBlock, composer)
-}
-
-// AddComposer is a paid mutator transaction binding the contract method 0x08b1cc14.
-//
-// Solidity: function addComposer(aerumBlock uint256, composer address) returns()
-func (_Atmos *AtmosTransactorSession) AddComposer(aerumBlock *big.Int, composer common.Address) (*types.Transaction, error) {
-	return _Atmos.Contract.AddComposer(&_Atmos.TransactOpts, aerumBlock, composer)
-}
-
-// Clean is a paid mutator transaction binding the contract method 0xfc4333cd.
-//
-// Solidity: function clean() returns()
-func (_Atmos *AtmosTransactor) Clean(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Atmos.contract.Transact(opts, "clean")
-}
-
-// Clean is a paid mutator transaction binding the contract method 0xfc4333cd.
-//
-// Solidity: function clean() returns()
-func (_Atmos *AtmosSession) Clean() (*types.Transaction, error) {
-	return _Atmos.Contract.Clean(&_Atmos.TransactOpts)
-}
-
-// Clean is a paid mutator transaction binding the contract method 0xfc4333cd.
-//
-// Solidity: function clean() returns()
-func (_Atmos *AtmosTransactorSession) Clean() (*types.Transaction, error) {
-	return _Atmos.Contract.Clean(&_Atmos.TransactOpts)
-}
-
-// CleanBootstrapDelegates is a paid mutator transaction binding the contract method 0x20388a58.
-//
-// Solidity: function cleanBootstrapDelegates() returns()
-func (_Atmos *AtmosTransactor) CleanBootstrapDelegates(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Atmos.contract.Transact(opts, "cleanBootstrapDelegates")
-}
-
-// CleanBootstrapDelegates is a paid mutator transaction binding the contract method 0x20388a58.
-//
-// Solidity: function cleanBootstrapDelegates() returns()
-func (_Atmos *AtmosSession) CleanBootstrapDelegates() (*types.Transaction, error) {
-	return _Atmos.Contract.CleanBootstrapDelegates(&_Atmos.TransactOpts)
-}
-
-// CleanBootstrapDelegates is a paid mutator transaction binding the contract method 0x20388a58.
-//
-// Solidity: function cleanBootstrapDelegates() returns()
-func (_Atmos *AtmosTransactorSession) CleanBootstrapDelegates() (*types.Transaction, error) {
-	return _Atmos.Contract.CleanBootstrapDelegates(&_Atmos.TransactOpts)
-}
-
-// RemoveComposer is a paid mutator transaction binding the contract method 0xa6e943de.
-//
-// Solidity: function removeComposer(delegateIndex uint16, delegate address) returns()
-func (_Atmos *AtmosTransactor) RemoveComposer(opts *bind.TransactOpts, delegateIndex uint16, delegate common.Address) (*types.Transaction, error) {
-	return _Atmos.contract.Transact(opts, "removeComposer", delegateIndex, delegate)
-}
-
-// RemoveComposer is a paid mutator transaction binding the contract method 0xa6e943de.
-//
-// Solidity: function removeComposer(delegateIndex uint16, delegate address) returns()
-func (_Atmos *AtmosSession) RemoveComposer(delegateIndex uint16, delegate common.Address) (*types.Transaction, error) {
-	return _Atmos.Contract.RemoveComposer(&_Atmos.TransactOpts, delegateIndex, delegate)
-}
-
-// RemoveComposer is a paid mutator transaction binding the contract method 0xa6e943de.
-//
-// Solidity: function removeComposer(delegateIndex uint16, delegate address) returns()
-func (_Atmos *AtmosTransactorSession) RemoveComposer(delegateIndex uint16, delegate common.Address) (*types.Transaction, error) {
-	return _Atmos.Contract.RemoveComposer(&_Atmos.TransactOpts, delegateIndex, delegate)
+// Solidity: function getComposers(_blockNum uint256, _timestamp uint256) constant returns(address[])
+func (_Atmos *AtmosCallerSession) GetComposers(_blockNum *big.Int, _timestamp *big.Int) ([]common.Address, error) {
+	return _Atmos.Contract.GetComposers(&_Atmos.CallOpts, _blockNum, _timestamp)
 }
