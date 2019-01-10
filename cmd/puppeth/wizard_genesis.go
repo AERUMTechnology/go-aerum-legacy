@@ -84,7 +84,7 @@ func (w *wizard) makeGenesis() {
 				Period:                     params.NewAtmosBlockInterval(),
 				Epoch:                      params.NewAtmosEpochInterval(),
 				GovernanceAddress:          params.NewAtmosGovernanceAddress(),
-				AERUMTechnologyApiEndpoint: params.NewAtmosEthereumRPCProvider(),
+				EthereumApiEndpoint: params.NewAtmosEthereumRPCProvider(),
 			},
 		},
 	}
