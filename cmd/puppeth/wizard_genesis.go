@@ -46,7 +46,7 @@ func getBootstrapDelegates() ([]common.Address, error) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	addresses, err := caller.ShowBootstrapDelegates(&bind.CallOpts{})
+	addresses, err := caller.GetComposers(&bind.CallOpts{}, big.NewInt(0), big.NewInt(time.Now().Unix()))
 	if err != nil {
 		fmt.Println(err)
 	}
