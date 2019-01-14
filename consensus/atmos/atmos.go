@@ -22,6 +22,7 @@ import (
 	"errors"
 	"math/big"
 	"math/rand"
+	"strings"
 	"sync"
 	"time"
 
@@ -423,7 +424,7 @@ func (a *Atmos) snapshot(chain consensus.ChainReader, number uint64, hash common
 				break
 			}
 			// If snapshot not found in db load it from governance contract
-			signers, err := getComposers(chain, a.config, number)
+			signers, err := getComposers(chain, a.config, number, parents)
 			if err != nil {
 				log.Error("Loaded snapshot from governance contract failed", "number", number, "hash", hash, "error", err)
 				return nil, err
@@ -702,7 +703,7 @@ func (a *Atmos) APIs(chain consensus.ChainReader) []rpc.API {
 }
 
 // Added by Aerum
-func getComposers(chain consensus.ChainReader, config *params.AtmosConfig, number uint64) ([]common.Address, error) {
+func getComposers(chain consensus.ChainReader, config *params.AtmosConfig, number uint64, parents []*types.Header) ([]common.Address, error) {
 	ethclient, err := ethclient.Dial(config.EthereumApiEndpoint)
 	if err != nil {
 		return nil, err
@@ -716,27 +717,42 @@ func getComposers(chain consensus.ChainReader, config *params.AtmosConfig, numbe
 	composersCheckTimestamp := big.NewInt(0)
 	if number > 0 {
 		// Get previous block to get time from it
-		prevHeader := chain.GetHeaderByNumber(number - 1)
+		prevHeader := getHeader(chain, parents, number - 1)
+
+
 		// Take composers for 20 minutes before now to make sure Ethereum syncs and there is no forks
 		ethereumSyncTimeoutInSeconds := big.NewInt(20 * 60)
 		composersCheckTimestamp = new(big.Int).Sub(prevHeader.Time, ethereumSyncTimeoutInSeconds)
 	}
 
+	log.Info("Loading new headers", "number", number, "time", composersCheckTimestamp)
 	addresses, err := caller.GetComposers(&bind.CallOpts{}, big.NewInt(int64(number)), composersCheckTimestamp)
 	if err != nil {
 		return nil, err
 	}
 
-	message := "New signers loaded: "
+	hexAddresses := make([]string, 0)
 	for _, address := range addresses {
-		message += "[" + address.Hex() + "] "
+		hexAddresses = append(hexAddresses, address.Hex())
 	}
-	message += "at time " + composersCheckTimestamp.String()
-
-
-	log.Info(message)
+	log.Info("New signers loaded", "signers", strings.Join(hexAddresses, ", "), "time", composersCheckTimestamp.String())
 
 	return addresses, nil
+}
+
+// Added by Aerum
+func getHeader(chain consensus.ChainReader, parents []*types.Header, number uint64) *types.Header {
+	// Check parents first
+	if len(parents) > 0 {
+		for _, p := range parents {
+			if p.Number.Uint64() == number {
+				return p
+			}
+		}
+	}
+
+	// If not found in parents try read from chain
+	return chain.GetHeaderByNumber(number)
 }
 
 // Added by Aerum
